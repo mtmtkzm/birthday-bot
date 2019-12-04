@@ -137,3 +137,6 @@ typings/
 .next
 
 /dist
+
+# IDE
+.idea
