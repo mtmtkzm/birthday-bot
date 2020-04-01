@@ -1,7 +1,9 @@
 require('dotenv').config();
 
-const TARGET_CHANNEL = 'C053W5ARA'
+const TARGET_CHANNEL_ID = 'C053W5ARA'
 const BIRTHDAY_FIELDS_KEY = 'XfR7AAL22U'
+
+const isExists = (target: any) => !!target
 
 class Birthday {
   app: any;
@@ -12,20 +14,25 @@ class Birthday {
 
   get list() {
     return (async () => {
-      const userIdList = await this._getUserIdList(TARGET_CHANNEL)
+      const userIdList = await this._getUserIdList(TARGET_CHANNEL_ID)
       const promises = userIdList.map((id: string) => this._getUserBirthday(id))
 
-      return await Promise.all(promises);
+      return (await Promise.all(promises)).filter(isExists);
     })();
   }
 
   async _getUserBirthday(userId: string) {
-    const usersProfileGet = await this.app.client.users.profile.get({
+    const user = await this.app.client.users.profile.get({
       token: process.env.SLACK_USER_TOKEN,
       user: userId
     });
 
-    return usersProfileGet?.profile?.fields?.[BIRTHDAY_FIELDS_KEY]?.value
+    return user.profile.fields?.[BIRTHDAY_FIELDS_KEY]?.value
+      ? {
+          name: user.profile.display_name || user.profile.real_name,
+          birthday: user.profile.fields[BIRTHDAY_FIELDS_KEY].value
+        }
+      : undefined
   }
 
   async _getUserIdList (channelId: string) {
