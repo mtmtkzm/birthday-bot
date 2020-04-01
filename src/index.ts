@@ -1,7 +1,7 @@
 const app = require('./modules/bolt')
+const share = require('./modules/share')
 const Birthday = require('./modules/birthday')
 const dayjs = require('dayjs')
-const SLACK_WEBHOOK_URL = process.env.SLACK_INCOMING_WEBHOOK
 
 interface User {
   name: String,
@@ -13,16 +13,27 @@ async function main() {
   console.log('⚡️ Bolt app is running!')
 
   const birthdayList = await (new Birthday(app)).list
+  console.log(birthdayList)
 
   const birthdayPeople = birthdayList.filter((user: User) => {
-    return !!user.birthday && dayjs(user.birthday).isSame(dayjs())
+    const birthday =dayjs(user.birthday).format('YYYYMMDD')
+    const today =dayjs().format('YYYYMMDD')
+
+    return !!user.birthday && birthday === today
   })
 
   console.log('birthdayPeople:', birthdayPeople)
+
+  birthdayPeople.forEach((person: User) => {
+    share.postSlack({
+      text: `@${person.name} HBD! :tada:`,
+      link_names: 1 // @がメンションと解釈されるためのフラグ
+    });
+  })
 }
 
 async function postData(url = ``, data = {}) {
-  return await (await (fetch(url, {method: "POST"}))).json()
+  return await (await (fetch(url, { method: 'POST' }))).json()
 }
 
 main()
