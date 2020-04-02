@@ -29,6 +29,7 @@ class Birthday {
 
     return user.profile.fields?.[BIRTHDAY_FIELDS_KEY]?.value
       ? {
+          user_id: userId,
           name: user.profile.display_name || user.profile.real_name,
           birthday: user.profile.fields[BIRTHDAY_FIELDS_KEY].value
         }

@@ -3,9 +3,12 @@ const share = require('./modules/share')
 const Birthday = require('./modules/birthday')
 const dayjs = require('dayjs')
 
+const formatDate = (date?: String) => dayjs(date).format('YYYYMMDD')
+
 interface User {
   name: String,
-  birthday: String
+  birthday: String,
+  user_id: String
 }
 
 async function main() {
@@ -13,21 +16,37 @@ async function main() {
   console.log('⚡️ Bolt app is running!')
 
   const birthdayList = await (new Birthday(app)).list
-  console.log(birthdayList)
 
   const birthdayPeople = birthdayList.filter((user: User) => {
-    const birthday =dayjs(user.birthday).format('YYYYMMDD')
-    const today =dayjs().format('YYYYMMDD')
+    const birthday = formatDate(user.birthday)
+    const today = formatDate()
 
     return !!user.birthday && birthday === today
   })
 
-  console.log('birthdayPeople:', birthdayPeople)
-
   birthdayPeople.forEach((person: User) => {
     share.postSlack({
-      text: `@${person.name} HBD! :tada:`,
-      link_names: 1 // @がメンションと解釈されるためのフラグ
+      "username": "birthday",
+      "icon_emoji": ":gift:",
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": `<@${person.user_id}> :tada: Happy Birthday!`
+          }
+        },
+        {
+          "type": "image",
+          "title": {
+            "type": "plain_text",
+            "text": "Happy Birthday!",
+            "emoji": true
+          },
+          "image_url": "https://media.giphy.com/media/LRCZEnOZRmAOE1MEWM/giphy.gif",
+          "alt_text": "image"
+        }
+      ]
     });
   })
 }
