@@ -1,7 +1,7 @@
 require('dotenv').config();
 
-const TARGET_CHANNEL_ID = 'C053W5ARA'
-const BIRTHDAY_FIELDS_KEY = 'XfR7AAL22U'
+const TARGET_CHANNEL_ID: string = 'C3P6KGBEK' // LIG #random
+const BIRTHDAY_FIELDS_KEY: string = 'XfLBDMKE8M' // LIG birthdate column
 
 const isExists = (target: any) => !!target
 
