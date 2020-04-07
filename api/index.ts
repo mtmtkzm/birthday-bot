@@ -2,8 +2,9 @@ const app = require('./modules/bolt')
 const share = require('./modules/share')
 const Birthday = require('./modules/birthday')
 const dayjs = require('dayjs')
+require('dayjs/locale/ja')
 
-const formatDate = (date?: String) => dayjs(date).format('YYYYMMDD')
+const formatDate = (date?: String) => dayjs(date).format('')
 
 interface User {
   name: String,
@@ -11,10 +12,11 @@ interface User {
   user_id: String
 }
 
-async function main() {
-  await app.start(3000)
-  console.log('⚡️ Bolt app is running!')
+import {NowRequest, NowResponse} from '@now/node'
 
+app.start(3000)
+
+export default async (req: NowRequest, res: NowResponse) => {
   const birthdayList = await (new Birthday(app)).list
 
   const birthdayPeople = birthdayList.filter((user: User) => {
@@ -24,8 +26,8 @@ async function main() {
     return !!user.birthday && birthday === today
   })
 
-  birthdayPeople.forEach((person: User) => {
-    share.postSlack({
+  const promises = birthdayPeople.map((person: User) => {
+    return share.postSlack({
       "username": "birthday",
       "icon_emoji": ":gift:",
       "blocks": [
@@ -49,10 +51,8 @@ async function main() {
       ]
     });
   })
-}
 
-async function postData(url = ``, data = {}) {
-  return await (await (fetch(url, { method: 'POST' }))).json()
-}
+  await Promise.all(promises);
 
-main()
+  return res.json({ "ok": true })
+}

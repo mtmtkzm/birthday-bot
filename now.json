@@ -1,0 +1,17 @@
+{
+  "env": {
+    "SLACK_SIGNING_SECRET": "@slack_signing_secret",
+    "SLACK_USER_TOKEN": "@slack_user_token",
+    "SLACK_BOT_TOKEN": "@slack_bot_token",
+    "SLACK_INCOMING_WEBHOOK": "@slack_incoming_webhook"
+  },
+  "build": {
+    "env": {
+      "SLACK_SIGNING_SECRET": "@slack_signing_secret",
+      "SLACK_USER_TOKEN": "@slack_user_token",
+      "SLACK_BOT_TOKEN": "@slack_bot_token",
+      "SLACK_INCOMING_WEBHOOK": "@slack_incoming_webhook"
+    }
+  }
+}
+
