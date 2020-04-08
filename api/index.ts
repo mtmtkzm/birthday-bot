@@ -2,9 +2,9 @@ const app = require('./modules/bolt')
 const share = require('./modules/share')
 const Birthday = require('./modules/birthday')
 const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
 require('dayjs/locale/ja')
-
-const formatDate = (date?: String) => dayjs(date).format('')
+dayjs.extend(utc)
 
 interface User {
   name: String,
@@ -20,8 +20,8 @@ export default async (req: NowRequest, res: NowResponse) => {
   const birthdayList = await (new Birthday(app)).list
 
   const birthdayPeople = birthdayList.filter((user: User) => {
-    const birthday = formatDate(user.birthday)
-    const today = formatDate()
+    const birthday = dayjs(user.birthday).format('YYYYMMDD')
+    const today = dayjs.utc().add(9, 'h').format('YYYYMMDD')
 
     return !!user.birthday && birthday === today
   })
@@ -54,5 +54,5 @@ export default async (req: NowRequest, res: NowResponse) => {
 
   await Promise.all(promises);
 
-  return res.json({ "ok": true })
+  return res.json({ "ok": true, list: birthdayList })
 }
