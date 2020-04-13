@@ -20,8 +20,8 @@ export default async (req: NowRequest, res: NowResponse) => {
   const birthdayList = await (new Birthday(app)).list
 
   const birthdayPeople = birthdayList.filter((user: User) => {
-    const birthday = dayjs(user.birthday).format('YYYYMMDD')
-    const today = dayjs.utc().add(9, 'h').format('YYYYMMDD')
+    const birthday = dayjs(user.birthday).format('MMDD')
+    const today = dayjs.utc().add(9, 'h').format('MMDD')
 
     return !!user.birthday && birthday === today
   })
